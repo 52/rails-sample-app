@@ -9,8 +9,23 @@ class ActiveSupport::TestCase
   # for all tests in alphabetical order.
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
   def logged_in?
     !session[:user_id].nil?
+  end
+
+  # Login as a particular user
+  # This helper is available for controller tests
+  def login_as user
+    session[:user_id] = user.id
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  # Login as a particular user
+  # This helper is available for integration test
+  def login_as user, password: "123456", remember_me: "1"
+    post login_path, params: {session: {email:       user.email,
+                                        password:    password,
+                                        remember_me: remember_me}}
   end
 end
