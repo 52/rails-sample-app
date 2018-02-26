@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   before_action :retrive_user, except: [:new, :create]
-  before_action :logged_in_user, only: [:index, :edit, :update]
+  before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
   before_action :authorize, only: [:edit, :update]
+  before_action :admin_user, only: [:destroy]
 
   def index
     @users = User.paginate page: params[:page]
@@ -39,6 +40,12 @@ class UsersController < ApplicationController
     end
   end
 
+  def destroy
+    flash[:success] = "Successfully deleted #{@user.name}'s account."
+    @user.destroy
+    redirect_to users_path
+  end
+
   private
 
   def user_params
@@ -63,6 +70,13 @@ class UsersController < ApplicationController
   def authorize
     return if current_user?(@user)
     flash[:danger] = "You are not authorized to perform this action."
+    redirect_to root_url
+  end
+
+  # Confirm currently logged-in user is admin
+  def admin_user
+    return if current_user.admin?
+    flash[:danger] = "Only admin can perform this action"
     redirect_to root_url
   end
 end

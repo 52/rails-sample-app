@@ -32,12 +32,15 @@ class ActionDispatch::IntegrationTest
   end
 
   # Update the given user
-  def update_user user, name: nil, email: nil, password: DEFAULT_TEST_PASSWORD
+  def update_user(user, name: nil, email: nil, password: DEFAULT_TEST_PASSWORD,
+                  admin: nil)
     name     ||= user.name
     email    ||= user.email
     password ||= user.password
+    admin    ||= user.admin
     patch user_path(user), params: {user: {name: name, email: email,
                                            password: password,
-                                           password_confirmation: password}}
+                                           password_confirmation: password,
+                                           admin: admin}}
   end
 end

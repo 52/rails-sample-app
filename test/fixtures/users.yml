@@ -1,3 +1,14 @@
+admin:
+  name: Admin
+  email: admin@local.com
+  password_digest: <%= User.digest DEFAULT_TEST_PASSWORD %>
+  admin: true
+
+normal_user:
+  name: Normal User
+  email: normal_user@local.com
+  password_digest: <%= User.digest DEFAULT_TEST_PASSWORD %>
+
 michael:
   name: Michael Example
   email: michael@example.com
