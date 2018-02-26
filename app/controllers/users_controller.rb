@@ -51,6 +51,7 @@ class UsersController < ApplicationController
   def logged_in_user
     return if logged_in?
     flash[:danger] = "Please login."
+    store_location # Store current url in session before redirect to login page
     redirect_to login_url
   end
 

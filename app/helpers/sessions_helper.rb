@@ -51,4 +51,15 @@ module SessionsHelper
   def current_user? user
     current_user == user
   end
+
+  # Store current url in session to redirect back later
+  def store_location
+    session[:forward_url] = request.original_url if request.get?
+  end
+
+  # Redirect to stored location (or to the provided path)
+  def redirect_back_or path
+    redirect_to(session[:forward_url] || path)
+    session.delete :forward_url
+  end
 end
