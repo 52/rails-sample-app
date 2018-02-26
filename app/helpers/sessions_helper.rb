@@ -46,4 +46,9 @@ module SessionsHelper
     cookies.delete :user_id
     cookies.delete :remember_token
   end
+
+  # Check if the given user is the current logged in user
+  def current_user? user
+    current_user == user
+  end
 end

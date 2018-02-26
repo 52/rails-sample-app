@@ -4,6 +4,8 @@ require "rails/test_help"
 require "minitest/reporters"
 Minitest::Reporters.use!
 
+DEFAULT_TEST_PASSWORD = "123456".freeze
+
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml
   # for all tests in alphabetical order.
@@ -23,9 +25,19 @@ end
 class ActionDispatch::IntegrationTest
   # Login as a particular user
   # This helper is available for integration test
-  def login_as user, password: "123456", remember_me: "1"
+  def login_as user, password: DEFAULT_TEST_PASSWORD, remember_me: "1"
     post login_path, params: {session: {email:       user.email,
                                         password:    password,
                                         remember_me: remember_me}}
+  end
+
+  # Update the given user
+  def update_user user, name: nil, email: nil, password: DEFAULT_TEST_PASSWORD
+    name     ||= user.name
+    email    ||= user.email
+    password ||= user.password
+    patch user_path(user), params: {user: {name: name, email: email,
+                                           password: password,
+                                           password_confirmation: password}}
   end
 end

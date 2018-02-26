@@ -1,4 +1,9 @@
 michael:
   name: Michael Example
   email: michael@example.com
-  password_digest: <%= User.digest "123456" %>
+  password_digest: <%= User.digest DEFAULT_TEST_PASSWORD %>
+
+hijacker:
+  name: Hijacker
+  email: hijacker@example.com
+  password_digest: <%= User.digest DEFAULT_TEST_PASSWORD %>
