@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
-  attr_accessor :remember_token, :activation_token
+  attr_accessor :remember_token, :activation_token, :password_reset_token
   validates :email, presence: true, length: {maximum: 200},
                     format: {with: VALID_EMAIL_REGEX},
                     uniqueness: {case_sensitive: false}
@@ -10,7 +10,7 @@ class User < ApplicationRecord
   before_create :create_activation_digest
   before_save ->{email.downcase!}
 
-  # Create & save a token in db when user chooses "Remember me" login option
+  # Store token in db to remember user persistent session
   def remember
     self.remember_token = User.new_token
     update_attribute :remember_digest, User.digest(remember_token)
@@ -31,12 +31,28 @@ class User < ApplicationRecord
 
   # Activate user account
   def activate
-    update_attributes activated: true, activated_at: Time.zone.now
+    update_columns activated: true, activated_at: Time.zone.now
+  end
+
+  # Create token use to verify user when user requests to reset password
+  def forgot_password
+    self.password_reset_token = User.new_token
+    update_columns password_reset_digest:  User.digest(password_reset_token),
+                   password_reset_sent_at: Time.zone.now
+  end
+
+  # Check if the password reset token is expired or not
+  def password_reset_expired?
+    password_reset_sent_at < 1.hour.ago
   end
 
   # Send activation email
   def send_activation_email
     UserMailer.account_activation(self).deliver_now
+  end
+
+  def send_password_reset_email
+    UserMailer.password_reset(self).deliver_now
   end
 
   private

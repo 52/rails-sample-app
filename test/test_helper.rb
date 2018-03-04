@@ -43,4 +43,13 @@ class ActionDispatch::IntegrationTest
                                            password_confirmation: password,
                                            admin: admin}}
   end
+
+  # User reset password with new password
+  # PATCH password_resets#update
+  def update_password user, pwd = "", pwd_confirm = ""
+    patch password_reset_path(user.password_reset_token),
+          params: {email: user.email,
+                   user: {password:              pwd,
+                          password_confirmation: pwd_confirm}}
+  end
 end
