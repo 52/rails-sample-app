@@ -27,6 +27,7 @@ class UsersController < ApplicationController
   def show
     @user = User.find_by id: params[:id]
     redirect_to root_url unless @user.activated?
+    @microposts = @user.microposts.paginate page: params[:page]
   end
 
   def edit
@@ -54,17 +55,11 @@ class UsersController < ApplicationController
                                  :password, :password_confirmation
   end
 
+  # Before filters
+
   # Get the corresponded user from the id in URL
   def retrive_user
     @user = User.find_by id: params[:id]
-  end
-
-  # Confirm that user is logged in
-  def logged_in_user
-    return if logged_in?
-    flash[:danger] = "Please login."
-    store_location # Store current url in session before redirect to login page
-    redirect_to login_url
   end
 
   # Confirm the correct user

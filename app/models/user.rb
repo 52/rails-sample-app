@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   attr_accessor :remember_token, :activation_token, :password_reset_token
+  has_many :microposts, dependent: :destroy
   validates :email, presence: true, length: {maximum: 200},
                     format: {with: VALID_EMAIL_REGEX},
                     uniqueness: {case_sensitive: false}
@@ -53,6 +54,11 @@ class User < ApplicationRecord
 
   def send_password_reset_email
     UserMailer.password_reset(self).deliver_now
+  end
+
+  # Defines a proto-feed.
+  def feed
+    Micropost.where("user_id = ?", id)
   end
 
   private

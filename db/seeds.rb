@@ -12,3 +12,11 @@ User.create! name: "Admin", email: "admin@local.com", admin: true,
                password_confirmation: password,
                activated: true, activated_at: Time.zone.now
 end
+
+# Seeding microposts
+users = User.first 6
+
+50.times do
+  content = Faker::Lorem.sentence 5
+  users.each{|user| user.microposts.create! content: content}
+end

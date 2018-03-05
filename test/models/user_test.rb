@@ -73,4 +73,12 @@ class UserTest < ActiveSupport::TestCase
     @user.save
     assert_not @user.valid?
   end
+
+  test "associated microposts should be destroyed when delete user" do
+    @user.save
+    @user.microposts.create content: "Lorem"
+    assert_difference "Micropost.count", -1 do
+      @user.destroy
+    end
+  end
 end
