@@ -2,6 +2,15 @@ class User < ApplicationRecord
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   attr_accessor :remember_token, :activation_token, :password_reset_token
   has_many :microposts, dependent: :destroy
+  has_many :active_relationships,  class_name:  :Relationship,
+                                   foreign_key: :follower_id,
+                                   dependent:   :destroy
+  has_many :passive_relationships, class_name:  :Relationship,
+                                   foreign_key: :followed_id,
+                                   dependent:   :destroy
+  has_many :following, through: :active_relationships, source: :followed
+  has_many :followers, through: :passive_relationships
+
   validates :email, presence: true, length: {maximum: 200},
                     format: {with: VALID_EMAIL_REGEX},
                     uniqueness: {case_sensitive: false}
@@ -59,6 +68,21 @@ class User < ApplicationRecord
   # Defines a proto-feed.
   def feed
     Micropost.where("user_id = ?", id)
+  end
+
+  # Follow the given user
+  def follow user
+    following << user
+  end
+
+  # Unfollow the given user
+  def unfollow user
+    following.delete user
+  end
+
+  # Check if following the given user or not
+  def following? user
+    following.include? user
   end
 
   private
